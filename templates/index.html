@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+    {% block title%}
+    <title>Главная</title>
+    {% endblock %}
 {% block body %}
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="bootstrap" viewBox="0 0 118 94">
@@ -165,21 +168,20 @@
       </div>
     </div>
   </div>
-
-  <div class="b-example-divider"></div>
-
-
-
-  <div class="b-example-divider"></div>
-
-
-
-  <div class="b-example-divider"></div>
-
-
 </main>
 
 
+
+<a href="/create_category/">Создать категорию</a>
+	<div>
+		<h1>Список существующих категорий</h1>
+        {% for item in objects_list %}
+        <li>
+            {{item.name}} <span>Количество курсов: {{item.course_count()}}</span>
+			<a href="/courses_list/?id={{item.id}}">Показать курсы</a>
+        </li>
+        {% endfor %}
+	</div>
     <script src="/docs/5.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
 {% endblock %}

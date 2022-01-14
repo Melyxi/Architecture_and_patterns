@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block body %}
+   <div>
+        <a href="/courses_list/?id={{id}}">назад</a>
+    </div>
+
+    <br>
+    <br>
+
+    <div>
+        <h1>Создание курса для категории "{{name}}"</h1>
+        <form method="post">
+            <input type="text" name="name" placeholder="Название" required >
+            <button type="submit">Сохранить и вернуться к списку курсов</button>
+            <label><input type="radio" name="course" value="interactive" required >Итерактивный</label>
+            <label><input type="radio" name="course" value="record" >Запись</label>
+
+        </form>
+    </div>
+{% endblock %}

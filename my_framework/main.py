@@ -14,13 +14,13 @@ class MyFramework(GetRequests, PostRequests):
         self.routes = routes
         self.middleware_context = middleware_context
         self.request = {}
-        self.view = None
+        self.__view = None
 
     def view_route(self, path):
         if path in self.routes:
-            self.view = self.routes[path]
+            self.__view = self.routes[path]
         else:
-            self.view = PageNotFound404()
+            self.__view = PageNotFound404()
 
     def middleware(self):
         for front in self.middleware_context:
@@ -48,7 +48,7 @@ class MyFramework(GetRequests, PostRequests):
         self.post_get_request(method, environ)
         self.view_route(path)
         self.middleware()
-        code, body = self.view(self.request)
+        code, body = self.__view(self.request)
 
         start_response(code, [('Content-Type', 'text/html')])
         return [body.encode('utf-8')]
