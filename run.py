@@ -1,10 +1,11 @@
 from wsgiref.simple_server import make_server
 import click
 from my_framework.main import MyFramework
-from urls import routes
+# from urls import routes
+from views import routers
 from middlewares import fronts
 
-application = MyFramework(routes, fronts)
+application = MyFramework(routers, fronts)
 
 
 @click.command()
