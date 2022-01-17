@@ -1,5 +1,4 @@
-from views import Index, About, category, PageCourse, create_user, CreateCategory, CoursesList, CreateCourse
-
+from views import Index, About, category, PageCourse, create_user, CreateCategory, CoursesList, CreateCourse, CopyCourse
 
 routes = {
     '/': Index(),
@@ -10,4 +9,5 @@ routes = {
     '/create_category/': CreateCategory(),
     '/courses_list/': CoursesList(),
     '/create_course/': CreateCourse(),
+    '/copy_course/': CopyCourse()
 }

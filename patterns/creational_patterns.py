@@ -121,7 +121,6 @@ class Engine:
         return UserFactory.create(type_)
 
     def create_course(self, type_, name, category):
-        self.courses.append(self)
         return CourseFactory.create(type_, name, category)
 
     def find_category_by_id(self, id):
@@ -130,6 +129,12 @@ class Engine:
             if item.id == id:
                 return item
         raise Exception(f'Нет категории с id = {id}')
+
+    def get_course(self, name):
+        for item in self.courses:
+            if item.name == name:
+                return item
+        return None
 
     @staticmethod
     def decode_value(val):

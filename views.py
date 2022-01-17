@@ -1,11 +1,12 @@
 from my_framework.shortcuts import render
-from patterns.creational_patterns import Engine
+from patterns.creational_patterns import Engine, Logger
 
 site = Engine()
-
+logger = Logger('main')
 
 class Index:
     def __call__(self, request):
+        logger.log('Главная')
         objects_list = site.categories
         return '200 OK', render(request, 'index.html', context={'objects_list': objects_list})
 
@@ -36,6 +37,7 @@ class CreateCourse:
     category_id = -1
 
     def __call__(self, request):
+        logger.log('Создание курсов')
         if request['method'] == 'POST':
             # метод пост
             data = request['data']
@@ -67,6 +69,7 @@ class CreateCourse:
 
 class CoursesList:
     def __call__(self, request):
+        logger.log('Курсы')
         try:
             category = site.find_category_by_id(
                 int(request['request_params']['id']))
@@ -80,7 +83,7 @@ class CoursesList:
 
 class CreateCategory:
     def __call__(self, request):
-
+        logger.log('Создание категории')
         if request['method'] == 'POST':
             # метод пост
 
@@ -104,3 +107,25 @@ class CreateCategory:
         if request['method'] == "GET":
             categories = site.categories
             return '200 OK', render(request, 'create_category.html', context={'categories': categories})
+
+class CopyCourse:
+    def __call__(self, request):
+        request_params = request['request_params']
+        print('3123')
+        try:
+            name = request_params['name']
+
+            old_course = site.get_course(name)
+            print(old_course)
+            if old_course:
+                new_name = f'copy_{name}'
+                new_course = old_course.clone()
+                new_course.name = new_name
+                site.courses.append(new_course)
+                return '200 OK', render(request, 'course_list.html',
+                                        context={'objects_list': site.courses, 'name': new_course.category.name})
+            print('33')
+            return '200 OK', render(request, 'course_list.html', context={'objects_list': site.courses})
+
+        except KeyError:
+            return '200 OK', 'No courses have been added yet'
