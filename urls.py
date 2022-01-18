@@ -1,4 +1,4 @@
-from views import Index, About, category, PageCourse, create_user
+from views import Index, About, category, PageCourse, Contacts
 
 
 routes = {
@@ -6,5 +6,5 @@ routes = {
     '/about/': About(),
     '/category/': category,
     '/page/': PageCourse(),
-    '/create/': create_user,
+    '/contacts/': Contacts(),
 }

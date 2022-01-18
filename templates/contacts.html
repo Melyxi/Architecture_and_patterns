@@ -1,6 +1,40 @@
 {% extends "base.html" %}
+
+  {% block style %}
+      <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+
+      .form-css {
+		border: solid black 2px;
+		width: 400px;
+		text-align: center;
+		margin: auto;
+		margin-top: 100px;
+      }
+
+    </style>
+  {% endblock %}
+
+
+
+
 {% block body %}
+
 	<form action="" method="post">
+<div class="form-css">
 		<fieldset>
 			<legend>Зарегистрируйтесь</legend>
 			<p><label class="title" for="name">Ваше имя:</label>
@@ -18,5 +52,7 @@
 			<label><input type="radio" name="member" value="no"> Нет</label><p></p>
 		</fieldset>
 	<div class="submit"><input type="submit" value="Регистрация"></div>
+</div>
 	</form>
+
 {% endblock %}
