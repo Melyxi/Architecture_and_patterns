@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block body %}
+Курс: {{object.name}}
+<br>Ученики:
+
+{% for user in object.users%}
+<ul>
+	{% if user.type == 'Студент'%}
+	 <li>{{user.name}}</li>
+	{% endif %}
+</ul>
+{% endfor%}
+Учителя:
+{% for user in object.users%}
+<ul>
+	{% if user.type == 'Учитель'%}
+		<li>{{user.name}}</li>
+	{% endif %}
+</ul>
+{% endfor%}
+
+	<form action="" method="post">
+<div class="form-css">
+		<fieldset>
+			<legend>Добавить пользователя</legend>
+			<p><label class="title" for="name">Ваше имя:</label>
+				 <input type="text" name="name" id="name" required><br>
+
+			<span class="title">Кем являетесь?</span>
+			<label><input type="radio" name="member" value="student" required>Ученик</label>
+			<label><input type="radio" name="member" value="teacher">Учитель</label><p></p>
+		</fieldset>
+	<div class="submit"><input type="submit" value="Регистрация"></div>
+</div>
+	</form>
+
+{% endblock %}

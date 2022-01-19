@@ -4,9 +4,9 @@ from quopri import decodestring
 
 
 class User(ABC):
-    first_name = None
-    last_name = None
-    password = None
+
+    def __init__(self, name):
+        self.name = name
 
     @abstractmethod
     def create(self):
@@ -14,12 +14,21 @@ class User(ABC):
 
 
 class Teacher(User):
-
+    def __init__(self, name):
+        super().__init__(name)
+        self.type = "Учитель"
+        Engine.teachers.append(self)
     def create(self):
         pass
 
 
 class Student(User):
+    def __init__(self, name):
+        super().__init__(name)
+        self.type = "Студент"
+
+        Engine.students.append(self)
+        
     def create(self):
         pass
 
@@ -32,8 +41,9 @@ class UserFactory:
 
     # порождающий паттерн Фабричный метод
     @classmethod
-    def create(cls, type_):
-        return cls.types[type_]()
+    def create(cls, type_, name):
+        return cls.types[type_](name)
+
 
 
 # порождающий паттерн Прототип
@@ -45,20 +55,29 @@ class CoursePrototype:
 
 
 class Course(CoursePrototype):
+    auto_id = 0
 
     def __init__(self, name, category):
+        self.id = Course.auto_id
         self.name = name
         self.category = category
         self.category.courses.append(self)
 
+        self.users = []
+
+
+        Course.auto_id += 1
+
         Engine.courses.append(self)
+
+    def add_obj(self, obj):
+        self.users.append(obj) 
 
 # интерактивный курс
 class InteractiveCourse(Course):
     def __init__(self, name, category):
         super().__init__(name, category)
         self.type = "Интерактивный"
-
 
 
 # курс в записи
@@ -117,8 +136,8 @@ class Engine:
         return Category(name, category)
 
     @staticmethod
-    def create_user(type_):
-        return UserFactory.create(type_)
+    def create_user(type_, name):
+        return UserFactory.create(type_, name)
 
     def create_course(self, type_, name, category):
         return CourseFactory.create(type_, name, category)
@@ -135,6 +154,14 @@ class Engine:
             if item.name == name:
                 return item
         return None
+
+    def get_obj_course(self, id):
+        print(self.courses)
+        for item in self.courses:
+            if item.id == id:
+                return item
+        return None
+
 
     @staticmethod
     def decode_value(val):
