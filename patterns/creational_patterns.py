@@ -4,9 +4,9 @@ from quopri import decodestring
 
 
 class User(ABC):
-    first_name = None
-    last_name = None
-    password = None
+
+    def __init__(self, name):
+        self.name = name
 
     @abstractmethod
     def create(self):
@@ -14,12 +14,21 @@ class User(ABC):
 
 
 class Teacher(User):
-
+    def __init__(self, name):
+        super().__init__(name)
+        self.type = "Учитель"
+        Engine.teachers.append(self)
     def create(self):
         pass
 
 
 class Student(User):
+    def __init__(self, name):
+        super().__init__(name)
+        self.type = "Студент"
+
+        Engine.students.append(self)
+        
     def create(self):
         pass
 
@@ -32,8 +41,9 @@ class UserFactory:
 
     # порождающий паттерн Фабричный метод
     @classmethod
-    def create(cls, type_):
-        return cls.types[type_]()
+    def create(cls, type_, name):
+        return cls.types[type_](name)
+
 
 
 # порождающий паттерн Прототип
@@ -45,20 +55,40 @@ class CoursePrototype:
 
 
 class Course(CoursePrototype):
+    auto_id = 0
 
     def __init__(self, name, category):
+        self.id = Course.auto_id
         self.name = name
         self.category = category
         self.category.courses.append(self)
 
-        Engine.courses.append(self)
+        self.users = []
 
+        Course.auto_id += 1
+        Engine.courses.append(self)
+        self.add_courses_category(category)
+
+
+    def add_obj(self, obj):
+        self.users.append(obj) 
+
+    def add_courses_category(self, obj):
+        if obj is not None:
+            if obj.category is not None:
+                obj.category.courses.append(self)
+                return self.add_courses_category(obj.category)
+
+
+    def add_courses(self, category):
+        if category:
+            self.courses.extend(self.courses)
+            return self.add_courses(category)
 # интерактивный курс
 class InteractiveCourse(Course):
     def __init__(self, name, category):
         super().__init__(name, category)
         self.type = "Интерактивный"
-
 
 
 # курс в записи
@@ -96,11 +126,22 @@ class Category:
 
         Engine.categories.append(self)
 
+    def __str__(self):
+        return str(self.name)
+
+    def count_course(self):
+        return len(self.courses)
+
     def course_count(self):
         result = len(self.courses)
         if self.category:
             result += self.category.course_count()
         return result
+
+    def add_courses(self, category):
+        if category:
+            self.courses.extend(self.courses)
+            return self.add_courses(category)
 
 
 # основной интерфейс проекта
@@ -117,8 +158,8 @@ class Engine:
         return Category(name, category)
 
     @staticmethod
-    def create_user(type_):
-        return UserFactory.create(type_)
+    def create_user(type_, name):
+        return UserFactory.create(type_, name)
 
     def create_course(self, type_, name, category):
         return CourseFactory.create(type_, name, category)
@@ -135,6 +176,30 @@ class Engine:
             if item.name == name:
                 return item
         return None
+
+    def get_obj_course(self, id):
+        print(self.courses)
+        for item in self.courses:
+            if item.id == id:
+                return item
+        return None
+
+
+    def get_category(self, id_category=None):
+        print(id_category, 'print(id_category)')
+        if id_category is not None:
+            res = []
+            for item in self.categories:
+                if item.category is not None:
+                    if item.category.id == id_category:
+                        res.append(item)
+
+            return res
+
+        else:
+            return [item for item in self.categories if item.category is None]
+
+
 
     @staticmethod
     def decode_value(val):

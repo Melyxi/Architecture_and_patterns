@@ -7,13 +7,25 @@
     <br>
     <br>
 
+	<div>
+		<h1 style="text-align: center;">Список существующих категорий</h1>
+        <nav class="navbar navbar-light bg-light" style="width: 1200px;margin: auto;justify-content: center;">
+        {% for item in child_category %}
+
+              <a class="navbar-brand" href="/courses_list/?id={{item.id}}">{{item.name}}</a>
+
+        {% endfor %}
+        </nav>
+	</div>
+
+<a href="/create_category/?id={{id}}" style="margin-left: 400px;">Создать подкатегорию</a>
     <div>
         <a href="/create_course/?id={{id}}">Создать новый курс</a>
         <br>
-        <h1>Список курсов для категории "{{name}}"</h1>
+        <h1>Список курсов для категории "{{name}}" количество курсов {{count}}</h1>
         {% for item in objects_list %}
         <li>
-            {{item.name}} {{item.type}}<span><a href="/copy_course/?name={{item.name}}">скопировать</a></span>
+          {{item.id}} <a href="/course/?id={{item.id}}">{{item.name}}</a> {{item.type}}<span><a href="/copy_course/?name={{item.name}}">скопировать</a></span>
         </li>
         {% endfor %}
     </div>

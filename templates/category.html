@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+
+
+	<div>
+		<h1 style="text-align: center;">Список существующих категорий</h1>
+        <nav class="navbar navbar-light bg-light" style="width: 1200px;margin: auto;justify-content: center;">
+        {% for item in objects_list %}
+
+              <a class="navbar-brand" href="/courses_list/?id={{item.id}}">{{item.name}}</a>
+
+        {% endfor %}
+        </nav>
+	</div>
+<a href="/create_category/" style="margin-left: 400px;">Создать категорию</a>
+{% endblock %}

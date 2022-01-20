@@ -33,8 +33,9 @@ class MyFramework(GetRequests, PostRequests):
             print(f'Нам пришёл post-запрос: {self.decode_value(data)}')
         if method == 'GET':
             request_params = self.get_request_params(environ)
-            self.request['request_params'] = self.decode_value(request_params)
-            print(f'Нам пришли GET-параметры: {request_params}')
+
+            self.request['request_params'] = request_params
+            print(f'Нам пришли GET-параметры: {self.decode_value(request_params)}')
 
     def __call__(self, environ, start_response):
         path = environ['PATH_INFO']
