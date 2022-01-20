@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7f8b4099-a4e4-438a-b13b-a78dc6caf351" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/about.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/category.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/contacts.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/course.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/middlewares.py" beforeDir="false" afterPath="$PROJECT_DIR$/middlewares.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_framework/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_framework/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_framework/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_framework/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_framework/requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_framework/requests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_framework/shortcuts.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_framework/shortcuts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/patterns/creational_patterns.py" beforeDir="false" afterPath="$PROJECT_DIR$/patterns/creational_patterns.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/course_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/course_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/inc_menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/inc_menu.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/views.py" afterDir="false" />
-    </list>
+    <list default="true" id="7f8b4099-a4e4-438a-b13b-a78dc6caf351" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

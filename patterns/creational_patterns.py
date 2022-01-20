@@ -110,6 +110,7 @@ class Category:
         self.description = description
         self.courses = []
 
+        self.parent_category = []
         # при создании объекта увеличивается счетчик
         Category.auto_id += 1
 

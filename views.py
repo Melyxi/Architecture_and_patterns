@@ -123,7 +123,7 @@ class CopyCourse:
         print('3123')
         try:
             name = request_params['name']
-
+            name = site.decode_value(name)
             old_course = site.get_course(name)
             print(old_course)
             if old_course:
