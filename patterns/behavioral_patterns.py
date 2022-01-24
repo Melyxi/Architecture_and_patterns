@@ -25,13 +25,13 @@ class Subject:
 class SmsNotifier(Observer):
 
     def update(self, subject):
-        print('SMS->', 'к нам присоединился', subject.students[-1].name)
+        print('SMS->', 'к нам присоединился', subject.users[-1].name, 'на курс', subject.name)
 
 
 class EmailNotifier(Observer):
 
     def update(self, subject):
-        print(('EMAIL->', 'к нам присоединился', subject.students[-1].name))
+        print(('EMAIL->', 'к нам присоединился', subject.users[-1].name, 'на курс', subject.name))
 
 
 class BaseSerializer:

@@ -1,10 +1,12 @@
 from my_framework.shortcuts import render
 from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import Debug, router, AppRoute
-from patterns.behavioral_patterns import ListView, CreateView, DetailView, BaseSerializer
+from patterns.behavioral_patterns import ListView, CreateView, DetailView, BaseSerializer, EmailNotifier, SmsNotifier
 
 site = Engine()
 logger = Logger('main')
+email_notifier = EmailNotifier()
+sms_notifier = SmsNotifier()
 
 routers = {}
 
@@ -203,7 +205,7 @@ class Course:
             request_params = request['request_params']
             id_course = request_params.get('id')
             course = site.get_obj_course(int(id_course))
-            print(course.users, 'course')
+
             return '200 OK', render(request, 'course.html', context={'object': course})
 
         if request['method'] == 'POST':
@@ -216,8 +218,12 @@ class Course:
 
             user = site.create_user(type_user, name)
             course = site.get_obj_course(int(id_course))
+
+            course.observers.append(email_notifier)
+            course.observers.append(sms_notifier)
+
             course.add_obj(user)
-            user.add_courses(course)
+
             return '200 OK', render(request, 'course.html', context={'object': course})
 
 
@@ -260,9 +266,10 @@ class AddStudentInCourse(CreateView):
 
         obj_course = site.get_obj_course(int(course_id))
         obj_user = site.get_obj_student(int(user_id))
-
+        obj_course.observers.append(email_notifier)
+        obj_course.observers.append(sms_notifier)
         obj_course.add_obj(obj_user)
-        obj_user.add_courses(obj_course)
+
 
 @AppRoute(routers, url='/add_teacher_for_course/')
 class AddTeacherInCourse(CreateView):
@@ -281,8 +288,10 @@ class AddTeacherInCourse(CreateView):
         obj_course = site.get_obj_course(int(course_id))
         obj_user = site.get_obj_teacher(int(user_id))
 
+        obj_course.observers.append(email_notifier)
+        obj_course.observers.append(sms_notifier)
+
         obj_course.add_obj(obj_user)
-        obj_user.add_courses(obj_course)
 
 
 @AppRoute(routers, url='/detail_user/')

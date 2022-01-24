@@ -82,8 +82,12 @@ class Course(CoursePrototype, Subject):
         return self.users[item]
 
     def add_obj(self, obj):
+        print('add user')
         if obj not in self.users:
+            print('notify')
             self.users.append(obj)
+            obj.courses.append(self)
+            self.notify()
 
     def add_courses_category(self, obj):
         if obj is not None:
