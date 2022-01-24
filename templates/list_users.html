@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+        {% for item in objects_list %}
+<ul>
+
+    <a href="/detail_user/?pk={{item.id}}"><li>{{item.name}}</li></a>
+
+</ul>
+        {% endfor %}
+<a href="/">На главную</a>
+
+{% endblock %}

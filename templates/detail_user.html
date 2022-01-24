@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block body %}
+Пользователь:
+<br>Имя: {{object.name}}
+<br>Роль: {{object.type}}
+
+{% for course in object.courses %}
+<ul>
+    <li><a href="/course/?id={{course.id}}">{{course.name}}</a>&nbsp&nbsp&nbsp{{course.type}}</li>
+</ul>
+{%endfor%}
+
+<a href="/">На главную</a>
+
+{% endblock %}

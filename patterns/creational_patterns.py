@@ -1,23 +1,32 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from quopri import decodestring
+from patterns.behavioral_patterns import FileWriter, Subject
 
 
 class User(ABC):
+    auto_id = 0
 
     def __init__(self, name):
+        self.id = User.auto_id
         self.name = name
+        self.courses = []
+        User.auto_id += 1
 
     @abstractmethod
     def create(self):
         pass
 
+    def add_courses(self, obj):
+        if obj not in self.courses:
+            self.courses.append(obj)
 
 class Teacher(User):
     def __init__(self, name):
         super().__init__(name)
         self.type = "Учитель"
         Engine.teachers.append(self)
+
     def create(self):
         pass
 
@@ -28,7 +37,7 @@ class Student(User):
         self.type = "Студент"
 
         Engine.students.append(self)
-        
+
     def create(self):
         pass
 
@@ -45,7 +54,6 @@ class UserFactory:
         return cls.types[type_](name)
 
 
-
 # порождающий паттерн Прототип
 class CoursePrototype:
     # прототип курсов обучения
@@ -54,7 +62,7 @@ class CoursePrototype:
         return deepcopy(self)
 
 
-class Course(CoursePrototype):
+class Course(CoursePrototype, Subject):
     auto_id = 0
 
     def __init__(self, name, category):
@@ -68,10 +76,14 @@ class Course(CoursePrototype):
         Course.auto_id += 1
         Engine.courses.append(self)
         self.add_courses_category(category)
+        super(Course, self).__init__()
 
+    def __getitem__(self, item):
+        return self.users[item]
 
     def add_obj(self, obj):
-        self.users.append(obj) 
+        if obj not in self.users:
+            self.users.append(obj)
 
     def add_courses_category(self, obj):
         if obj is not None:
@@ -80,10 +92,11 @@ class Course(CoursePrototype):
                 return self.add_courses_category(obj.category)
 
 
-    def add_courses(self, category):
-        if category:
-            self.courses.extend(self.courses)
-            return self.add_courses(category)
+
+
+
+
+
 # интерактивный курс
 class InteractiveCourse(Course):
     def __init__(self, name, category):
@@ -184,6 +197,18 @@ class Engine:
                 return item
         return None
 
+    def get_obj_student(self, id):
+        for item in self.students:
+            if item.id == id:
+                return item
+        return None
+
+    def get_obj_teacher(self, id):
+        for item in self.teachers:
+            if item.id == id:
+                return item
+        return None
+
 
     def get_category(self, id_category=None):
         print(id_category, 'print(id_category)')
@@ -198,8 +223,6 @@ class Engine:
 
         else:
             return [item for item in self.categories if item.category is None]
-
-
 
     @staticmethod
     def decode_value(val):
@@ -230,12 +253,13 @@ class SingletonByName(type):
 
 class Logger(metaclass=SingletonByName):
 
-    def __init__(self, name):
+    def __init__(self, name, writer=FileWriter()):
         self.name = name
+        self.writer = writer
 
-    @staticmethod
-    def log(text):
-        print('log--->', text)
+    def log(self, text):
+        text = f'log---> {text}'
+        self.writer.write(text)
 
 
 if __name__ == "__main__":

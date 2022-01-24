@@ -1,6 +1,7 @@
 from my_framework.shortcuts import render
 from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import Debug, router, AppRoute
+from patterns.behavioral_patterns import ListView, CreateView, DetailView, BaseSerializer
 
 site = Engine()
 logger = Logger('main')
@@ -37,13 +38,18 @@ class About:
     def __call__(self, request):
         return '200 OK', render(request, 'about.html')
 
-@AppRoute(routers, '/category/')
-class Category:
-    def __call__(self, request):
-        objects_list = site.get_category()
-        print(objects_list)
-        return '200 OK', render(request, 'category.html', context={'objects_list': objects_list})
 
+@AppRoute(routers, '/category/')
+class Category(ListView):
+    template_name = 'category.html'
+
+    def get_queryset(self):
+        return site.get_category()
+
+    # def __call__(self, request):
+    #     objects_list = site.get_category()
+    #     print(objects_list)
+    #     return '200 OK', render(request, 'category.html', context={'objects_list': objects_list})
 
 
 @AppRoute(routers, '/page/')
@@ -126,7 +132,6 @@ class CoursesList:
             return '200 OK', 'No courses have been added yet'
 
 
-
 @AppRoute(routers, '/create_category/')
 class CreateCategory:
     @Debug('CreateCategory')
@@ -152,14 +157,12 @@ class CreateCategory:
 
             site.create_category(name, category)
 
-
             print(site.categories, 'category')
             return '200 OK', render(request, 'category.html', context={'objects_list': site.get_category()})
 
         if request['method'] == "GET":
             categories = site.categories
             return '200 OK', render(request, 'create_category.html', context={'categories': categories})
-
 
 
 @AppRoute(routers, '/copy_course/')
@@ -214,5 +217,91 @@ class Course:
             user = site.create_user(type_user, name)
             course = site.get_obj_course(int(id_course))
             course.add_obj(user)
+            user.add_courses(course)
             return '200 OK', render(request, 'course.html', context={'object': course})
 
+
+@AppRoute(routers, '/create_user/')
+class CreateUser(CreateView):
+    template_name = 'create_user.html'
+    success_url = 'index.html'
+
+    def create_obj(self, data):
+        name = site.decode_value(data['name'])
+        type_user = site.decode_value(data.get('member'))
+        site.create_user(type_user, name)
+
+
+@AppRoute(routers, '/list_students/')
+class CreateUser(ListView):
+    template_name = 'list_users.html'
+    queryset = site.students
+
+
+@AppRoute(routers, '/list_teachers/')
+class CreateUser(ListView):
+    template_name = 'list_users.html'
+    queryset = site.teachers
+
+
+@AppRoute(routers, url='/add_student_for_course/')
+class AddStudentInCourse(CreateView):
+    template_name = 'add_user.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['courses'] = site.courses
+        context['users'] = site.students
+        return context
+
+    def create_obj(self, data: dict):
+        course_id = site.decode_value(data['course_id'])
+        user_id = site.decode_value(data['user_id'])
+
+        obj_course = site.get_obj_course(int(course_id))
+        obj_user = site.get_obj_student(int(user_id))
+
+        obj_course.add_obj(obj_user)
+        obj_user.add_courses(obj_course)
+
+@AppRoute(routers, url='/add_teacher_for_course/')
+class AddTeacherInCourse(CreateView):
+    template_name = 'add_user.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['courses'] = site.courses
+        context['users'] = site.teachers
+        return context
+
+    def create_obj(self, data: dict):
+        course_id = site.decode_value(data['course_id'])
+        user_id = site.decode_value(data['user_id'])
+
+        obj_course = site.get_obj_course(int(course_id))
+        obj_user = site.get_obj_teacher(int(user_id))
+
+        obj_course.add_obj(obj_user)
+        obj_user.add_courses(obj_course)
+
+
+@AppRoute(routers, url='/detail_user/')
+class DetailStudent(DetailView):
+    template_name = 'detail_user.html'
+
+    def get_queryset(self):
+        res = []
+        students = site.students
+        teachers = site.teachers
+        res.extend(students)
+        res.extend(teachers)
+
+        print(res, 'result')
+        return res
+
+
+@AppRoute(routers, url='/api/')
+class CourseApi:
+    @Debug(name='CourseApi')
+    def __call__(self, request):
+        return '200 OK', BaseSerializer(site.courses).save()
