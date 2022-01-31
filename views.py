@@ -1,5 +1,6 @@
 from my_framework.shortcuts import render
-from patterns.creational_patterns import Engine, Logger
+from patterns.architectural_system_pattern_unit_of_work import UnitOfWork
+from patterns.creational_patterns import Engine, Logger, MapperRegistry
 from patterns.structural_patterns import Debug, router, AppRoute
 from patterns.behavioral_patterns import ListView, CreateView, DetailView, BaseSerializer, EmailNotifier, SmsNotifier
 
@@ -7,7 +8,8 @@ site = Engine()
 logger = Logger('main')
 email_notifier = EmailNotifier()
 sms_notifier = SmsNotifier()
-
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 routers = {}
 
 
@@ -235,19 +237,31 @@ class CreateUser(CreateView):
     def create_obj(self, data):
         name = site.decode_value(data['name'])
         type_user = site.decode_value(data.get('member'))
-        site.create_user(type_user, name)
+        new_obj = site.create_user(type_user, name)
+
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 
 @AppRoute(routers, '/list_students/')
-class CreateUser(ListView):
+class ListUser(ListView):
     template_name = 'list_users.html'
-    queryset = site.students
+
+    # queryset = site.students
+
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('user')
+        return mapper.filter(type="Студент")
 
 
 @AppRoute(routers, '/list_teachers/')
-class CreateUser(ListView):
+class listTeacher(ListView):
     template_name = 'list_users.html'
-    queryset = site.teachers
+
+    # queryset = site.teachers
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('user')
+        return mapper.filter(type="Учитель")
 
 
 @AppRoute(routers, url='/add_student_for_course/')

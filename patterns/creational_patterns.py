@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from quopri import decodestring
+from sqlite3 import connect
+
 from patterns.behavioral_patterns import FileWriter, Subject
+from patterns.architectural_system_pattern_unit_of_work import DomainObject
 
 
 class User(ABC):
@@ -21,7 +24,8 @@ class User(ABC):
         if obj not in self.courses:
             self.courses.append(obj)
 
-class Teacher(User):
+
+class Teacher(User, DomainObject):
     def __init__(self, name):
         super().__init__(name)
         self.type = "Учитель"
@@ -31,7 +35,7 @@ class Teacher(User):
         pass
 
 
-class Student(User):
+class Student(User, DomainObject):
     def __init__(self, name):
         super().__init__(name)
         self.type = "Студент"
@@ -94,11 +98,6 @@ class Course(CoursePrototype, Subject):
             if obj.category is not None:
                 obj.category.courses.append(self)
                 return self.add_courses_category(obj.category)
-
-
-
-
-
 
 
 # интерактивный курс
@@ -213,7 +212,6 @@ class Engine:
                 return item
         return None
 
-
     def get_category(self, id_category=None):
         print(id_category, 'print(id_category)')
         if id_category is not None:
@@ -264,6 +262,142 @@ class Logger(metaclass=SingletonByName):
     def log(self, text):
         text = f'log---> {text}'
         self.writer.write(text)
+
+
+class UserMapper:
+    types = {
+        'Студент': 'student',
+        'Учитель': 'teacher'
+    }
+    def __init__(self, connection, connector=None, type=None):
+        self.connection = connection
+        self.cursor = connection.cursor()
+        self.tablename = 'user'
+        self.connector = connector
+        # print(self.connector.__dict__)
+
+    @staticmethod
+    def get_fields(obj):
+        attrs = obj.__dict__
+        print(attrs, 'attrs')
+
+        list_field = []
+        values = []
+        for key, value, in attrs.items():
+            if key != 'id':
+                if not isinstance(value, list):
+                    list_field.append(key)
+                    values.append(value)
+        str_parametr = '?, ' * len(list_field)
+
+        return values, str_parametr, list_field
+
+    def all(self):
+        statement = f'SELECT * from {self.tablename}'
+        self.cursor.execute(statement)
+        result = []
+
+        for item in self.cursor.fetchall():
+            id, name, type = item
+
+            student = UserFactory.create(self.types[type], name)
+            student.id = id
+            result.append(student)
+        return result
+
+    def filter(self, **kwargs):
+        keys = kwargs.keys()
+        values = kwargs.values()
+        statement = f"SELECT * FROM {self.tablename} WHERE {'=?, '.join(keys)+'=?'}"
+        self.cursor.execute(statement, tuple(values))
+        result = []
+        for item in self.cursor.fetchall():
+            id, name, type = item
+            student = UserFactory.create(self.types[type], name)
+            student.id = id
+            result.append(student)
+        return result
+
+    def find_by_id(self, id):
+        statement = f"SELECT id, name, type FROM {self.tablename} WHERE id=?"
+        self.cursor.execute(statement, (id,))
+        result = self.cursor.fetchone()
+        if result:
+            id, name, type = result
+            student = UserFactory.create(self.types[type], name)
+            student.id = id
+            return student
+        else:
+            raise RecordNotFoundException(f'record with id={id} not found')
+
+    def insert(self, obj):
+        values, str_parametr, list_field = self.get_fields(obj)
+        statement = f"INSERT INTO {self.tablename} ({', '.join(list_field)}) VALUES ({str_parametr.rstrip(', ')})"
+        self.cursor.execute(statement, tuple(values))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbCommitException(e.args)
+
+    def update(self, obj):
+        statement = f"UPDATE {self.tablename} SET name=? WHERE id=?"
+
+        self.cursor.execute(statement, (obj.name, obj.id))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbUpdateException(e.args)
+
+    def delete(self, obj):
+        statement = f"DELETE FROM {self.tablename} WHERE id=?"
+        self.cursor.execute(statement, (obj.id,))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbDeleteException(e.args)
+
+
+connection = connect('patterns.sqlite')
+
+
+# архитектурный системный паттерн - Data Mapper
+class MapperRegistry:
+    mappers = {
+        'user': UserMapper,
+        # 'category': CategoryMapper
+    }
+
+    @staticmethod
+    def get_mapper(obj):
+        if isinstance(obj, Student):
+            return UserMapper(connection, connector=obj, type='Student')
+
+        if isinstance(obj, Teacher):
+            return UserMapper(connection, connector=obj, type='Teacher')
+
+    @staticmethod
+    def get_current_mapper(name):
+        return MapperRegistry.mappers[name](connection)
+
+
+class DbCommitException(Exception):
+    def __init__(self, message):
+        super().__init__(f'Db commit error: {message}')
+
+
+class DbUpdateException(Exception):
+    def __init__(self, message):
+        super().__init__(f'Db update error: {message}')
+
+
+class DbDeleteException(Exception):
+    def __init__(self, message):
+        super().__init__(f'Db delete error: {message}')
+
+
+class RecordNotFoundException(Exception):
+    def __init__(self, message):
+        super().__init__(f'Record not found: {message}')
 
 
 if __name__ == "__main__":
